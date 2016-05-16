@@ -1,6 +1,7 @@
 package nl.hu.zrb;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,6 +39,23 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 	TextView rv;
 	
 	NumberFormat nf ;
+
+	private Location getLastKnownLocation() {
+		lmanager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+		List<String> providers = lmanager.getProviders(true);
+		Location bestLocation = null;
+		for (String provider : providers) {
+			Location l = lmanager.getLastKnownLocation(provider);
+			if (l == null) {
+				continue;
+			}
+			if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+				// Found best last known location: %s", l);
+				bestLocation = l;
+			}
+		}
+		return bestLocation;
+	}
 		
 	 public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -61,11 +79,11 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
         
         smanager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         //orientatiesensor = smanager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        mAccelerometer = smanager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		 mAccelerometer = smanager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = smanager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         
-        Intent intent = getIntent();     
-        String naam = intent.getStringExtra("naam");        
+        Intent intent = getIntent();
+		 String naam = intent.getStringExtra("naam");
         TextView tv = (TextView)findViewById(R.id.textViewLocation);
         tv.setText(naam);        
 
@@ -73,13 +91,14 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
         double lat = intent.getDoubleExtra("latitude", 90.0);
 		targetLocation = new Location(locationprovider);
 		targetLocation.setLatitude(lat);
-		targetLocation.setLongitude(lon);        
+		targetLocation.setLongitude(lon);
+		 onLocationChanged(getLastKnownLocation());
 	 }
 	 
     public void onResume(){
     	super.onResume();
     	//wl.acquire();
-    	lmanager.requestLocationUpdates(locationprovider, 0,0, this);
+    	lmanager.requestLocationUpdates(locationprovider, 0, 0, this);
     	smanager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     	smanager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
     	//smanager.registerListener(this, orientatiesensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -136,36 +155,42 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 		
 	}
 
-	@Override
+
+    float[] mags = {0f,0f,0f};
+    float[] accels = {0f,0f,0f};
+    float[] attitude = {0f, 0f, 0f};
+    @Override
 	public void onSensorChanged(SensorEvent event) {
 		
 		int type = event.sensor.getType();
 
-		float[] mags = {0f,0f,0f};		
+
 		if(type == Sensor.TYPE_MAGNETIC_FIELD){
 			for(int i = 0; i < 3; i++){mags[i] = event.values[i];}
 		}
-		float[] accels = {0f,0f,0f};
 		if(type == Sensor.TYPE_ACCELEROMETER){
 			for(int i = 0; i < 3; i++){accels[i] = event.values[i];}
 		}
 		float[] R = new float[9];
 		float[] I = new float[9];
 		boolean b = SensorManager.getRotationMatrix(R, I, accels, mags);
-		Log.d("Kompas", "getRotationMatrixSucces: " + b); //false
-		float[] attitude = {0f, 0f, 0f};
-		SensorManager.getOrientation(R, attitude);
-		deviceRichting = attitude[0];
-		kv.setRichting(targetRichting - deviceRichting);
-		/*
+
+        if(b) {
+            
+            SensorManager.getOrientation(R, attitude);
+            deviceRichting = (float) Math.toDegrees(attitude[0]);
+            Log.d("Kompas", "devicerichting: " + deviceRichting); //false
+            kv.setRichting(targetRichting - deviceRichting);
+        }
+/*
 		if (type == Sensor.TYPE_ORIENTATION){
 			float[] x = event.values;
 			deviceRichting = x[0];
 			Log.d("Kompas", "deviceRichting: " + deviceRichting);
 			Log.d("Kompas", "targetRichting: " + targetRichting);
 			kv.setRichting(targetRichting - deviceRichting);	
-		}	*/
-			
+		}
+*/
 	}	 
 
 }
