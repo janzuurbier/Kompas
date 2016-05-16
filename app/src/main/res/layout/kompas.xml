@@ -2,8 +2,9 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent" 
-  android:layout_height="wrap_content" 
-  android:orientation="vertical">
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+	android:keepScreenOn="true">
        <TextView android:id="@+id/textViewLocation" 
        	android:textSize="20dip" 
        	android:text="@string/locatie"
@@ -21,18 +22,18 @@
        	android:textColor="#ff0000"
        	android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-       	android:focusableInTouchMode="true"
-       	android:layout_weight="0">
-       </TextView>
-       <nl.hu.zrb.KompasView android:id="@+id/viewkompas"
-       	android:layout_width="match_parent" 
-       	android:layout_height="0dip" 
-       	android:layout_weight="1">
-       </nl.hu.zrb.KompasView>
-       <TextView android:id="@+id/textViewDirection"
-       	android:layout_weight="0"
-       	android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+		android:focusableInTouchMode="true"
+		android:layout_weight="0">
+		</TextView>
+		<nl.hu.zrb.KompasView android:id="@+id/viewkompas"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1">
+		</nl.hu.zrb.KompasView>
+		<TextView android:id="@+id/textViewDirection"
+		android:layout_weight="0"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
        	android:background="#ffffff"
        	android:textColor="#ff0000"
        	android:text="@string/direction">

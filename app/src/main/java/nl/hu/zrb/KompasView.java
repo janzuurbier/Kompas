@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 public class KompasView extends View  {
@@ -52,8 +53,8 @@ public class KompasView extends View  {
 		int modeY = MeasureSpec.getMode(specY);
 		int x = 200;
 		int y = 200;
-		if(modeX == MeasureSpec.EXACTLY || modeX == MeasureSpec.AT_MOST) x = sizeX;
-		if(modeY == MeasureSpec.EXACTLY || modeY == MeasureSpec.AT_MOST) y = sizeY;
+		if(modeX == MeasureSpec.EXACTLY ) x = sizeX;
+		if(modeY == MeasureSpec.EXACTLY ) y = sizeY;
 		setMeasuredDimension(x, y);
 	}
 	

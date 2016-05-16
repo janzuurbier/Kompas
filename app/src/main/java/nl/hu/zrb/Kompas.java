@@ -22,12 +22,12 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 	
 	LocationManager lmanager;
 	SensorManager smanager;
-	PowerManager.WakeLock wl;
+	//PowerManager.WakeLock wl;
 	
 	String locationprovider = "gps";
-	//private Sensor mAccelerometer;
-	//private Sensor mMagnetometer;
-	private Sensor orientatiesensor; 
+	private Sensor mAccelerometer;
+	private Sensor mMagnetometer;
+	//private Sensor orientatiesensor;
 	
 	Location targetLocation;
 	float targetRichting;
@@ -50,8 +50,8 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
         nf.setMaximumFractionDigits(1);
         nf.setMinimumFractionDigits(1);
         
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Kompas");
+        //PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        //wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Kompas");
         
         lmanager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
@@ -60,9 +60,9 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
         locationprovider = lmanager.getBestProvider(criteria, true);
         
         smanager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        orientatiesensor = smanager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        //mAccelerometer = smanager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        //mMagnetometer = smanager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        //orientatiesensor = smanager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        mAccelerometer = smanager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetometer = smanager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         
         Intent intent = getIntent();     
         String naam = intent.getStringExtra("naam");        
@@ -78,17 +78,17 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 	 
     public void onResume(){
     	super.onResume();
-    	wl.acquire();
+    	//wl.acquire();
     	lmanager.requestLocationUpdates(locationprovider, 0,0, this);
-    	//smanager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL); 
-    	//smanager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-    	smanager.registerListener(this, orientatiesensor, SensorManager.SENSOR_DELAY_NORMAL);
+    	smanager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    	smanager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+    	//smanager.registerListener(this, orientatiesensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
     
     public void onPause(){
     	lmanager.removeUpdates(this);
     	smanager.unregisterListener(this);
-    	wl.release();
+    	//wl.release();
     	super.onPause();
     }
 
@@ -109,7 +109,7 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 		}
 		
 		
-		rv.setText("koers  " + nf.format(targetRichting) + "°");
+		rv.setText("koers  " + nf.format(targetRichting) + "ï¿½");
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 	public void onSensorChanged(SensorEvent event) {
 		
 		int type = event.sensor.getType();
-		/* werkt niet op Samsung Galaxy Ace
+
 		float[] mags = {0f,0f,0f};		
 		if(type == Sensor.TYPE_MAGNETIC_FIELD){
 			for(int i = 0; i < 3; i++){mags[i] = event.values[i];}
@@ -157,14 +157,14 @@ public class Kompas extends Activity implements LocationListener, SensorEventLis
 		SensorManager.getOrientation(R, attitude);
 		deviceRichting = attitude[0];
 		kv.setRichting(targetRichting - deviceRichting);
-		*/
+		/*
 		if (type == Sensor.TYPE_ORIENTATION){
 			float[] x = event.values;
 			deviceRichting = x[0];
 			Log.d("Kompas", "deviceRichting: " + deviceRichting);
 			Log.d("Kompas", "targetRichting: " + targetRichting);
 			kv.setRichting(targetRichting - deviceRichting);	
-		}	
+		}	*/
 			
 	}	 
 
